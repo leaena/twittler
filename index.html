@@ -1,27 +1,72 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="bootstrap.min.css">
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
   </head>
   <body>
     <script>
+      var count = streams.home.length - 1;
+      var interval;
 
-      $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+      function startTimer() {
+        clearInterval(interval);    
+        interval = setInterval(tweetAdd, 3000);
+      }
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
+      function parseTweets(index,x,list){
+        var list = list || streams.home;
+        while(index > x){
+          var tweet = list[index];
+          var user = tweet.user;
+          var tweets = '<div class="list-group-item"><a style="cursor:pointer;" class="' + user + '">@' + user + '</a>: ' + tweet.message + ' &nbsp; &nbsp; <span class="text-muted">' + tweet.created_at + '</span></div>';
+          $('.list-group').prepend(tweets);
           index -= 1;
         }
+      }
 
+      function tweetAdd() {
+        if(streams.home.length-1 > count){
+          var i = streams.home.length - 1;
+          parseTweets(i,count);
+          count = streams.home.length - 1;
+        }
+      }
+
+      $(document).ready(function(){
+        var index = streams.home.length - 1;
+        startTimer();
+
+        $('div.list-group').on('click','a',function(){
+          $('h4').text('view all tweets');
+          var user = $(this).attr('class');
+          clearInterval(interval);
+          var userTweets = streams.users[user];
+          var userLength = userTweets.length - 1;
+          $('div.list-group-item').hide();
+          parseTweets(userLength,0,userTweets); 
+
+        });
+
+        $('h4').on('click',function(){
+          $("div.list-group-item").filter(':visible').remove();
+          $("div.list-group-item").show();
+          $(this).text('');
+          startTimer();
+        });  
+
+      
       });
 
+
     </script>
+    <div class="jumbotron" style="margin:0px 439px 0px 20px;">
+      <h1>Twittler</h1>
+      <p class="text-info">Created by Lindsey Smith. Styled by <a href="http://bootswatch.com">Bootswatch</a>.</p>
+      <a style="cursor:pointer;"><h4></h4></a>
+    </div>
+    <div class="list-group" style="width:1000px;">
+    </div>
   </body>
 </html>
