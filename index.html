@@ -21,7 +21,7 @@
         while(x < index){
           var tweet = list[x];
           var user = tweet.user;
-          var tweets = '<div class="list-group-item"><a style="cursor:pointer;" class="' + user + '">@' + user + '</a>: ' + tweet.message + ' &nbsp; &nbsp; <span class="text-muted">' + tweet.created_at + '</span></div>';
+          var tweets = '<div class="list-group-item"><a style="cursor:pointer;" class="' + user + '">@' + user + '</a>: ' + tweet.message + ' &nbsp; &nbsp; <span class="text-muted">' + tweet.created_at; + '</span></div>';
           $('.list-group').prepend(tweets);
           x++;
         }
@@ -33,11 +33,28 @@
           parseUserTweets(i,count);
           count = streams.home.length - 1;
         }
+
+
       }
+
+      function sendTweet(){
+        visitor = $('.user').val() || "guest";
+        streams.users[visitor]=[];
+        $('.user').val('');
+        var message = $('.message').val();
+        writeTweet(message);
+        $('.message').val('');
+      }
+
 
       $(document).ready(function(){
         var index = streams.home.length - 1;
         startTimer();
+
+        $('form').submit(function(e) {
+          e.preventDefault();
+          sendTweet();
+        });
 
         $('div.list-group').on('click','a',function(){
           $('h4').text('view all tweets');
@@ -56,16 +73,15 @@
           count = streams.home.length-1;
           $(this).text('');
           startTimer();
-        });  
+        });
 
-      
-      });
-
+      });  
 
     </script>
     <div class="jumbotron" style="margin:0px 439px 0px 20px;">
       <h1>Twittler</h1>
-      <p class="text-info">Created by Lindsey Smith. Styled by <a href="http://bootswatch.com">Bootswatch</a>.</p>
+      <p class="text-info">Tweet your own message:</p>
+      <p><form>Username: <input class="user" type="text"/> Message: <input class="message" type="text"/> <button class="send">send</button></form></p>
       <a style="cursor:pointer;"><h4></h4></a>
     </div>
     <div class="list-group" style="width:1000px;">
